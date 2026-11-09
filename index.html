@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quản lý thư viện</title>
+<link rel="stylesheet" href="/css/library-theme.css">
+</head>
+<body>
+
+<div id="login">
+  <div class="login-scene" aria-hidden="true">
+    <div class="scene-brand"><span class="scene-mark">❧</span><span>LIBRARY<br>SPACE</span></div>
+    <div class="scene-content">
+      <span class="scene-kicker">KHÔNG GIAN TRI THỨC</span>
+      <h1>Chào mừng đến<br><em>thư viện của bạn.</em></h1>
+      <p>Một không gian quản lý tri thức gọn gàng, hiện đại và đầy cảm hứng.</p>
+      <div class="scene-art">
+        <div class="scene-orbit orbit-one"></div><div class="scene-orbit orbit-two"></div>
+        <div class="scene-book b-one"></div><div class="scene-book b-two"></div><div class="scene-book b-three"></div>
+        <div class="scene-plant"><i></i><i></i><i></i><i></i><i></i></div>
+      </div>
+    </div>
+    <div class="scene-bottom">QUẢN LÝ THƯ VIỆN <span>✦</span> HỌC TẬP &amp; KHÁM PHÁ</div>
+  </div>
+  <div class="login-form-area">
+    <form class="login-box" id="loginForm">
+      <div class="login-logo"><span class="login-logo-icon" id="loginIcon"></span><span>Thư viện <b>GreenLeaf</b></span></div>
+      <span class="eyebrow">ĐĂNG NHẬP HỆ THỐNG</span>
+      <h2>Rất vui được gặp lại!</h2>
+      <p class="login-subtitle">Nhập thông tin tài khoản để tiếp tục quản lý thư viện.</p>
+      <label class="field"><span>Tên đăng nhập</span><input id="lUser" required autocomplete="username" placeholder="Nhập tên đăng nhập"></label>
+      <label class="field"><span>Mật khẩu</span><span class="password-wrap"><input id="lPass" type="password" required autocomplete="current-password" placeholder="Nhập mật khẩu"><button type="button" class="toggle-password" id="togglePassword" aria-label="Hiển thị mật khẩu">Hiện</button></span></label>
+      <div id="lErr" class="error hidden" role="alert"></div>
+      <button class="primary login-submit" id="lBtn" type="submit">Đăng nhập <span aria-hidden="true">→</span></button>
+      <div class="login-demo"><span>Tài khoản dùng thử</span><p><button type="button" class="demo-account" data-act="demo-admin">Quản trị viên</button><button type="button" class="demo-account" data-act="demo-reader">Độc giả</button></p><small>Chỉ dành cho dữ liệu mẫu / môi trường học tập.</small></div>
+    </form>
+    <p class="login-copyright">© 2026 Quản lý thư viện · Giao diện GreenLeaf</p>
+  </div>
+</div>
+
+<div id="app" class="hidden">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand"><span class="brand-icon" id="brandIcon"></span><span class="brand-copy"><strong>Quản lý thư viện</strong><small>LIBRARY MANAGEMENT</small></span></div>
+    <div class="sidebar-line"></div>
+    <span class="nav-caption">DANH MỤC QUẢN LÝ</span>
+    <nav id="nav" aria-label="Điều hướng chính"></nav>
+    <div class="sidebar-bottom">
+      <div class="sidebar-decor" aria-hidden="true"><div class="decor-leaf l1"></div><div class="decor-leaf l2"></div><div class="decor-leaf l3"></div><div class="decor-book book-first"></div><div class="decor-book book-second"></div><div class="decor-book book-third"></div></div>
+      <div class="sidebar-help"><span class="sidebar-help-dot"></span><span>Hệ thống thư viện<br><small>Không gian tri thức của bạn</small></span></div>
+    </div>
+  </aside>
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+  <div class="app-workspace">
+    <header class="topbar">
+      <button id="menuToggle" class="icon-button menu-toggle" type="button" aria-label="Mở hoặc đóng menu" aria-controls="sidebar" aria-expanded="false"><span id="menuIcon"></span></button>
+      <div class="top-search-wrap"><span id="searchIcon"></span><input type="search" id="globalSearch" aria-label="Tìm kiếm sách" placeholder="Tìm kiếm sách trong thư viện..." title="Nhấn Enter để tìm kiếm sách"><kbd>Enter ↵</kbd></div>
+      <div class="top-actions">
+        <button class="icon-button notification-button" data-act="overdue" aria-label="Xem phiếu mượn quá hạn" title="Xem phiếu quá hạn"><span id="bellIcon"></span><i id="noticeDot" class="notice-dot hidden"></i></button>
+        <div class="topbar-divider"></div>
+        <button class="profile-button" data-act="profile" aria-label="Mở menu tài khoản" aria-expanded="false"><span class="profile-avatar" id="avatarIcon"></span><span class="profile-text"><strong id="who">Quản trị viên</strong><small id="whoRole">Quản trị viên</small></span><span id="chevronIcon"></span></button>
+        <div class="profile-menu hidden" id="profileMenu"><div class="profile-menu-head">Tài khoản của bạn<small id="menuUsername"></small></div><button data-act="change-pw"><span id="keyIcon"></span> Đổi mật khẩu</button><button data-act="logout" class="logout-item"><span id="logoutIcon"></span> Đăng xuất</button></div>
+      </div>
+    </header>
+    <main id="main" tabindex="-1"></main>
+    <footer class="workspace-footer"><span>© 2026 Thư viện GreenLeaf</span><span>Thiết kế đơn giản · Quản lý hiệu quả</span></footer>
+  </div>
+</div>
+
+<div id="modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+  <div class="box">
+    <div class="modal-header"><div><span class="eyebrow">THÔNG TIN CHI TIẾT</span><h3 id="mTitle"></h3></div><button class="modal-close" id="mClose" aria-label="Đóng cửa sổ" type="button">×</button></div>
+    <div id="mBody"></div>
+    <div id="mErr" role="alert"></div>
+    <div class="foot"><button id="mCancel">Hủy</button><button class="primary" id="mOk">Lưu</button></div>
+  </div>
+</div>
+<div id="toast" class="hidden" role="status" aria-live="polite"></div>
+
+<script>
+const $ = s => document.querySelector(s);
+/* Bộ biểu tượng SVG nội bộ: không phụ thuộc CDN, chạy được khi ngoại tuyến. */
+const ICON_PATHS = {
+  book: '<path d="M12 7c-3.5-2.5-7.5-2.5-10-1v13c3-1.5 7-1.5 10 1 3-2.5 7-2.5 10-1V6c-2.5-1.5-6.5-1.5-10 1Z"/><path d="M12 7v13"/>',
+  home: '<path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-6v-7h-4v7H4a1 1 0 0 1-1-1Z"/>',
+  author: '<circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/>',
+  feather: '<path d="M20 4c-8-.5-14 3-15 11l-1 5 5-1C17 18 21 12 20 4Z"/><path d="M3 21c3-5 8-10 14-13"/>',
+  receipt: '<path d="M7 2h10l3 3v17l-4-2-4 2-4-2-4 2V5Z"/><path d="M9 9h7M9 13h7"/>',
+  users: '<path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',
+  code: '<path d="m8 17-5-5 5-5m8 0 5 5-5 5M14 4l-4 16"/>',
+  chart: '<path d="M4 21V11m6 10V4m6 17v-8m5 8v-6" stroke-width="3" stroke-linecap="round"/>',
+  search: '<circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/>',
+  bell: '<path d="M18 8a6 6 0 0 0-12 0c0 7-3 8-3 9h18c0-1-3-2-3-9M10 21h4"/>',
+  chevron: '<path d="m6 9 6 6 6-6"/>',
+  key: '<circle cx="8" cy="15" r="4"/><path d="m11 12 9-9 2 2-3 3 2 2-3 3-2-2"/>',
+  logout: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/>',
+  menu: '<path d="M4 6h16M4 12h16M4 18h16"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  copy: '<rect x="8" y="8" width="13" height="13" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/>',
+  check: '<circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/>',
+  alert: '<circle cx="12" cy="12" r="9"/><path d="M12 7v6m0 4h.01"/>',
+  layers: '<path d="m12 2 9 5-9 5-9-5 9-5Zm-9 10 9 5 9-5m-18 5 9 5 9-5"/>',
+  star: '<path d="m12 2 3.1 6.2 6.9 1-5 4.9 1.2 6.9-6.2-3.2-6.2 3.2 1.2-6.9-5-4.9 6.9-1Z"/>',
+  bookmark: '<path d="M5 4a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v18l-7-4-7 4Z"/>',
+  calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18"/>',
+};
+function ico(name, size = 22) {
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${ICON_PATHS[name] || ICON_PATHS.book}</svg>`;
+}
+function setupIcons() {
+  const targets = { brandIcon:'book', loginIcon:'book', menuIcon:'menu', searchIcon:'search', bellIcon:'bell', avatarIcon:'author', chevronIcon:'chevron', keyIcon:'key', logoutIcon:'logout' };
+  for (const [id, name] of Object.entries(targets)) { const node = document.getElementById(id); if (node) node.innerHTML = ico(name, id === 'brandIcon' ? 47 : 21); }
+}
+function closeSidebar() { $('#sidebar').classList.remove('open'); $('#sidebarBackdrop').classList.remove('open'); $('#menuToggle').setAttribute('aria-expanded','false'); }
+function closeProfile() { $('#profileMenu').classList.add('hidden'); $('.profile-button').setAttribute('aria-expanded','false'); }
+function toggleProfile() { const menu = $('#profileMenu'); const open = menu.classList.toggle('hidden') === false; $('.profile-button').setAttribute('aria-expanded', String(open)); }
+
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtDate = d => d ? new Date(d).toLocaleDateString('vi-VN') : '—';
+const toInputDate = d => { if (!d) return ''; const x = new Date(d); return new Date(x - x.getTimezoneOffset() * 60000).toISOString().slice(0, 10); };
+const fromInputDate = v => new Date(v + 'T12:00:00').toISOString();
+const qs = o => { const p = new URLSearchParams(); for (const [k, v] of Object.entries(o)) if (v !== '' && v != null) p.append(k, v); const s = p.toString(); return s ? '?' + s : ''; };
+const listOf = d => Array.isArray(d) ? d : (d?.items ?? d?.data ?? d?.Items ?? []);
+const isAdmin = () => session?.role?.toLowerCase() === 'admin';
+
+let token = null, session = null, current = null, seq = 0, searchTimer;
+const cache = { books: {}, authors: {}, loans: {}, accounts: {}, copies: {} };
+const S = {
+  books:    { tuKhoa: '', conSan: '', sortBy: '', sortOrder: 'asc', pageNumber: 1, pageSize: 10 },
+  authors:  { tuKhoa: '', pageNumber: 1, pageSize: 10 },
+  loans:    { trangThai: '', pageNumber: 1, pageSize: 10 },
+  accounts: { tuKhoa: '', vaiTro: '', pageNumber: 1, pageSize: 10 },
+  apiLog:   { phuongThuc: '', maTrangThai: '', pageNumber: 1, pageSize: 20 },
+};
+
+/* ---------- JWT ---------- */
+function decodeJwt(t) {
+  try {
+    let b = t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+    while (b.length % 4) b += '=';
+    const bytes = Uint8Array.from(atob(b), c => c.charCodeAt(0));
+    return JSON.parse(new TextDecoder().decode(bytes));
+  } catch { return null; }
+}
+function parseSession(t) {
+  const p = decodeJwt(t);
+  if (!p) return null;
+  if (p.exp && p.exp * 1000 < Date.now()) return null;
+  const roleKey = Object.keys(p).find(k => /role|vaitro/i.test(k));
+  let role = roleKey ? p[roleKey] : 'User';
+  if (Array.isArray(role)) role = role[0];
+  const name = p.unique_name || p.name || p.tenDangNhap || p.sub || '';
+  return { role: String(role), name: String(name) };
+}
+
+/* ---------- HTTP ---------- */
+async function readError(res) {
+  const text = await res.text();
+  let data = null;
+  try { data = JSON.parse(text); } catch { data = text; }
+  const map = { 400: 'Dữ liệu chưa hợp lệ.', 403: 'Bạn không có quyền thực hiện thao tác này.', 404: 'Không tìm thấy dữ liệu.', 429: 'Quá nhiều yêu cầu, vui lòng thử lại sau.' };
+  if (data && typeof data === 'object') {
+    const errs = data.errors ? Object.values(data.errors).flat().join(' ') : '';
+    const msg = data.detail || errs || data.title;
+    if (msg) return msg;
+  } else if (typeof data === 'string' && data.trim() && data.length < 300) {
+    return data;
+  }
+  return map[res.status] || `Lỗi máy chủ (${res.status}).`;
+}
+
+async function api(path, { method = 'GET', body, form, auth = true, noLogout = false } = {}) {
+  const headers = {};
+  if (auth && token) headers.Authorization = 'Bearer ' + token;
+  let payload;
+  if (form) payload = form;
+  else if (body !== undefined) { headers['Content-Type'] = 'application/json'; payload = JSON.stringify(body); }
+  let res;
+  try { res = await fetch(path, { method, headers, body: payload }); }
+  catch { throw new Error('Không kết nối được máy chủ. Kiểm tra API đã chạy chưa.'); }
+  if (res.status === 401 && auth && !noLogout) { logout(); throw new Error('Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại.'); }
+  if (!res.ok) throw new Error(await readError(res));
+  if (res.status === 204) return null;
+  const text = await res.text();
+  try { return text ? JSON.parse(text) : null; } catch { return text; }
+}
+
+/* ---------- Toast & modal ---------- */
+let toastTimer;
+function toast(msg, ok = true) {
+  const t = $('#toast');
+  t.textContent = msg;
+  t.style.background = ok ? 'var(--grn)' : 'var(--red)';
+  t.classList.remove('hidden');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.add('hidden'), 3000);
+}
+
+let modalSubmit = null;
+function openModal(title, body, submit, okText = 'Lưu') {
+  $('#mTitle').textContent = title;
+  $('#mBody').innerHTML = body;
+  $('#mErr').textContent = '';
+  $('#mOk').textContent = okText;
+  modalSubmit = submit;
+  $('#modal').classList.remove('hidden');
+  const f = $('#mBody input, #mBody select, #mBody textarea');
+  if (f) f.focus();
+}
+function closeModal() { $('#modal').classList.add('hidden'); $('#modal .box').style.maxWidth = ''; modalSubmit = null; }
+$('#mCancel').onclick = closeModal;
+$('#mOk').onclick = async () => {
+  const btn = $('#mOk');
+  btn.disabled = true;
+  $('#mErr').textContent = '';
+  try {
+    // Hàm xử lý trả về true = nó đã tự thay nội dung hộp thoại (ví dụ: quay về danh sách
+    // bản sao) -> KHÔNG đóng hộp thoại.
+    const giuMo = await modalSubmit();
+    if (giuMo !== true) closeModal();
+  }
+  catch (e) { $('#mErr').textContent = e.message; }
+  finally { btn.disabled = false; }
+};
+
+/* ---------- Session ---------- */
+function startSession(t) {
+  const s = t && parseSession(t);
+  if (!s) throw new Error('Không đọc được phiên đăng nhập từ máy chủ.');
+  token = t;
+  session = s;
+  sessionStorage.setItem('qltv_token', t);
+  $('#login').classList.add('hidden');
+  $('#app').classList.remove('hidden');
+  $('#who').textContent = session.name || (isAdmin() ? 'Quản trị viên' : 'Độc giả');
+  $('#whoRole').textContent = isAdmin() ? 'Quản trị viên' : 'Độc giả';
+  $('#menuUsername').textContent = session.name;
+  $('#globalSearch').value = '';
+  buildNav();
+  showView(isAdmin() ? 'dashboard' : 'books');
+}
+function logout() {
+  token = null;
+  session = null;
+  sessionStorage.removeItem('qltv_token');
+  closeModal();
+  $('#app').classList.add('hidden');
+  $('#login').classList.remove('hidden');
+  $('#lPass').value = '';
+  closeSidebar();
+  closeProfile();
+  $('#noticeDot').classList.add('hidden');
+}
+
+$('#loginForm').onsubmit = async e => {
+  e.preventDefault();
+  const err = $('#lErr'), btn = $('#lBtn');
+  err.classList.add('hidden');
+  btn.disabled = true;
+  try {
+    const res = await fetch('/api/auth/dang-nhap', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tenDangNhap: $('#lUser').value.trim(), matKhau: $('#lPass').value })
+    });
+    if (res.status === 401) throw new Error('Sai tên đăng nhập hoặc mật khẩu.');
+    if (!res.ok) throw new Error(await readError(res));
+    const text = await res.text();
+    let t = text;
+    try {
+      const d = JSON.parse(text);
+      t = typeof d === 'string' ? d : (d.token ?? d.accessToken ?? d.Token ?? d.jwt ?? '');
+    } catch { /* plain-text token */ }
+    startSession(t);
+  } catch (ex) {
+    err.textContent = ex instanceof TypeError ? 'Không kết nối được máy chủ.' : ex.message;
+    err.classList.remove('hidden');
+  } finally {
+    btn.disabled = false;
+  }
+};
+
+/* ---------- Navigation ---------- */
+const TABS = [
+  { id: 'dashboard', label: 'Tổng quan', icon: 'home', admin: true },
+  { id: 'books', label: 'Sách', icon: 'book' },
+  { id: 'authors', label: 'Tác giả', icon: 'author' },
+  { id: 'loans', label: 'Phiếu mượn', icon: 'receipt' },
+  { id: 'accounts', label: 'Tài khoản', icon: 'users', admin: true },
+  { id: 'apiLog', label: 'Nhật ký API', icon: 'code', admin: true },
+  { id: 'analytics', label: 'Thống kê', icon: 'chart', admin: true },
+];
+function buildNav() {
+  $('#nav').innerHTML = TABS.filter(t => !t.admin || isAdmin())
+    .map(t => `<button data-act="view" data-id="${t.id}" aria-current="false">${ico(t.icon)}<span>${t.label}</span></button>`).join('');
+}
+function showView(id) {
+  if (!TABS.some(t => t.id === id && (!t.admin || isAdmin()))) return;
+  current = id;
+  document.querySelectorAll('#nav button').forEach(b => {
+    const active = b.dataset.id === id;
+    b.classList.toggle('active', active);
+    b.setAttribute('aria-current', active ? 'page' : 'false');
+  });
+  closeSidebar(); closeProfile();
+  const title = TABS.find(t => t.id === id)?.label || 'Quản lý thư viện';
+  document.title = `${title} · Quản lý thư viện`;
+  $('#main').innerHTML = shells[id]();
+  load(id);
+  window.scrollTo({top: 0, behavior: 'instant'});
+}
+
+/* ---------- View shells ---------- */
+const sel = (target, key, opts) =>
+  `<select data-filter="${target}" data-key="${key}">${opts.map(([v, l]) =>
+    `<option value="${v}" ${String(S[target][key]) === v ? 'selected' : ''}>${l}</option>`).join('')}</select>`;
+
+function sectionHead(title, desc, badge = 'THƯ VIỆN GREENLEAF') {
+  return `<section class="section-head"><div><span class="eyebrow">${badge}</span><h2>${title}</h2><p>${desc}</p></div><div class="section-tag">${ico('book',14)} Quản lý thư viện</div></section>`;
+}
+const heroArt = `<div class="hero-art" aria-hidden="true"><div class="hero-books"><span class="hero-book"></span><span class="hero-book"></span><span class="hero-book"></span></div><div class="hero-stem"></div><div class="hero-leaf"></div><div class="hero-leaf leaf-two"></div><div class="hero-leaf leaf-three"></div><div class="hero-pot"></div></div>`;
+const shells = {
+  dashboard: () => `<section class="page-heading page-heading--dashboard"><span class="eyebrow">TRANG QUẢN TRỊ THƯ VIỆN</span><h2>Tổng quan</h2><p>Chào mừng trở lại! Dưới đây là tình hình hoạt động của thư viện.</p>${heroArt}</section><div id="list"></div>`,
+  books: () => `${sectionHead('Quản lý sách','Tra cứu, cập nhật đầu sách, ảnh bìa và các bản sao trong thư viện.')}<div class="filters-card"><div class="toolbar">
+      <input type="search" data-filter="books" data-key="tuKhoa" placeholder="Tìm theo tên sách..." value="${esc(S.books.tuKhoa)}">
+      ${sel('books', 'conSan', [['', 'Tất cả tình trạng'], ['true', 'Còn sẵn'], ['false', 'Đang cho mượn']])}
+      ${sel('books', 'sortBy', [['', 'Sắp xếp: mặc định'], ['tenSach', 'Theo tên sách'], ['namXuatBan', 'Theo năm xuất bản']])}
+      ${sel('books', 'sortOrder', [['asc', 'Tăng dần'], ['desc', 'Giảm dần']])}
+      ${isAdmin() ? '<button class="primary" data-act="book-new">+ Thêm sách</button>' : ''}
+    </div></div><div id="list"></div>`,
+  authors: () => `${sectionHead('Quản lý tác giả','Danh sách tác giả và thông tin tiểu sử của từng người.') }<div class="filters-card"><div class="toolbar">
+      <input type="search" data-filter="authors" data-key="tuKhoa" placeholder="Tìm theo họ tên..." value="${esc(S.authors.tuKhoa)}">
+      ${isAdmin() ? '<button class="primary" data-act="author-new">+ Thêm tác giả</button>' : ''}
+    </div></div><div id="list"></div>`,
+  loans: () => `${sectionHead('Quản lý phiếu mượn','Theo dõi, gia hạn và xác nhận trả sách cho độc giả.')}<div class="filters-card"><div class="toolbar">
+      ${sel('loans', 'trangThai', [['', 'Tất cả'], ['dangMuon', 'Đang mượn'], ['quaHan', 'Quá hạn'], ['daTra', 'Đã trả']])}
+    </div></div><div id="list"></div>`,
+  accounts: () => `${sectionHead('Quản lý tài khoản','Kiểm soát người dùng, phân quyền và bảo mật tài khoản.')}<div class="filters-card"><div class="toolbar">
+      <input type="search" data-filter="accounts" data-key="tuKhoa" placeholder="Tìm theo tên đăng nhập..." value="${esc(S.accounts.tuKhoa)}">
+      ${sel('accounts', 'vaiTro', [['', 'Tất cả vai trò'], ['Admin', 'Admin'], ['User', 'User']])}
+      <button class="primary" data-act="acc-new">+ Tạo tài khoản</button>
+    </div></div><div id="list"></div>`,
+  apiLog: () => `${sectionHead('Nhật ký API','Theo dõi các yêu cầu và trạng thái phản hồi của hệ thống.')}<div class="filters-card"><div class="toolbar">
+      ${sel('apiLog', 'phuongThuc', [['', 'Tất cả phương thức'], ['GET', 'GET'], ['POST', 'POST'], ['PUT', 'PUT'], ['DELETE', 'DELETE']])}
+      ${sel('apiLog', 'maTrangThai', [['', 'Tất cả mã'], ['200', '200'], ['201', '201'], ['400', '400'], ['401', '401'], ['403', '403'], ['404', '404'], ['500', '500']])}
+    </div></div><div id="list"></div>`,
+  analytics: () => `${sectionHead('Báo cáo & thống kê','Tổng hợp số liệu tài sản và hiệu suất hoạt động thư viện.') }<div id="list"></div>`,
+};
+
+/* ---------- Filters ---------- */
+document.addEventListener('input', e => {
+  const el = e.target;
+  if (!el.dataset.filter || el.tagName !== 'INPUT') return;
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => applyFilter(el), 400);
+});
+document.addEventListener('change', e => {
+  const el = e.target;
+  if (el.dataset.filter && el.tagName === 'SELECT') applyFilter(el);
+});
+function applyFilter(el) {
+  const t = el.dataset.filter, key = el.dataset.key;
+  if (t !== current) return;
+  const v = el.value.trim();
+  if (S[t][key] === v) return;
+  S[t][key] = v;
+  S[t].pageNumber = 1;
+  load(t);
+}
+
+/* ---------- Loading ---------- */
+const empty = (msg = 'Không có dữ liệu.') => `<div class="muted pad">${msg}</div>`;
+function pager(target, count) {
+  const s = S[target];
+  return `<div class="pager">
+    <button data-act="page" data-target="${target}" data-dir="-1" ${s.pageNumber <= 1 ? 'disabled' : ''}>← Trước</button>
+    <span class="muted">Trang ${s.pageNumber}</span>
+    <button data-act="page" data-target="${target}" data-dir="1" ${count < s.pageSize ? 'disabled' : ''}>Sau →</button>
+  </div>`;
+}
+
+const renderers = { dashboard: renderDashboard, books: renderBooks, authors: renderAuthors, loans: renderLoans, accounts: renderAccounts, apiLog: renderApiLog, analytics: renderAnalytics };
+
+async function load(target) {
+  const my = ++seq;
+  const el = $('#list');
+  if (el) el.innerHTML = '<div class="card muted pad">Đang tải dữ liệu thư viện...</div>';
+  try {
+    const html = await renderers[target]();
+    if (my === seq && current === target) $('#list').innerHTML = html;
+  } catch (e) {
+    if (my === seq && current === target) $('#list').innerHTML = `<div class="error">${esc(e.message)}</div>`;
+  }
+}
+
+/* ---------- Dashboard ---------- */
+const METRIC_META = [
+  ['Tổng số sách', 'tongSoSach', 'book'],
+  ['Tổng tác giả', 'tongSoTacGia', 'feather'],
+  ['Tổng tài khoản', 'tongSoTaiKhoan', 'users'],
+  ['Sách đang cho mượn', 'sachDangChoMuon', 'bookmark'],
+  ['Phiếu đang mượn', 'phieuDangMuon', 'receipt'],
+  ['Phiếu quá hạn', 'phieuQuaHan', 'alert'],
+  ['Tổng số bản sao', 'tongSoBanSao', 'layers'],
+  ['Bản sao có sẵn', 'banSaoCoSan', 'check'],
+];
+function metricCards(d) {
+  return `<div class="stats">${METRIC_META.map(([label, key, icon]) =>
+    `<article class="stat"><span class="stat-icon">${ico(icon, 27)}</span><span class="stat-text"><span class="stat-label">${label}</span><b>${Number(d[key] ?? 0).toLocaleString('vi-VN')}</b></span></article>`
+  ).join('')}</div>`;
+}
+function popularBooksTable(top) {
+  return `<div class="card">${top.length ? `<div class="table-scroll"><table><thead><tr><th>Mã sách</th><th>Tên sách</th><th>Số lần mượn</th></tr></thead><tbody>${top.map(x => `<tr><td><span class="table-no">#${Number(x.maSach)}</span></td><td><span class="table-book"><span class="table-book-mark">${ico('book',15)}</span>${esc(x.tenSach)}</span></td><td><b>${Number(x.soLanMuon) || 0}</b> lượt</td></tr>`).join('')}</tbody></table></div>` : empty('Chưa có lượt mượn sách nào.')}</div>`;
+}
+function availabilityChart(d) {
+  const total = Math.max(0, Number(d.tongSoBanSao) || 0);
+  const available = Math.max(0, Math.min(total, Number(d.banSaoCoSan) || 0));
+  const unavailable = total - available;
+  const pct = total ? 100 * available / total : 0;
+  return `<div class="stat-donut-wrap"><div class="donut" role="img" aria-label="${available} bản sao có sẵn trên tổng ${total} bản sao, chiếm ${pct.toFixed(1)} phần trăm" style="--pct:${pct.toFixed(2)}%"><div class="donut-hole"><span>Tổng số</span><b>${total}</b><small>bản sao</small></div></div>
+    <div class="donut-legend"><div class="legend-row"><i class="legend-dot"></i><div><strong>${available} <span class="muted">(${pct.toFixed(1)}%)</span></strong><small>Bản sao có sẵn</small></div></div><div class="legend-row"><i class="legend-dot alt"></i><div><strong>${unavailable} <span class="muted">(${(total ? 100-pct : 0).toFixed(1)}%)</span></strong><small>Đang mượn hoặc không sẵn</small></div></div></div></div><div class="legend-foot">Thống kê theo trạng thái tất cả bản sao được lưu trong hệ thống.</div>`;
+}
+async function renderDashboard() {
+  const d = await api('/api/thongke/tong-quan');
+  const top = d.topSachDuocMuon ?? [];
+  const notice = $('#noticeDot');
+  if (notice) notice.classList.toggle('hidden', !(Number(d.phieuQuaHan) > 0));
+  return `${metricCards(d)}<div class="dashboard-grid">
+    <section class="panel"><div class="panel-head"><div class="panel-title"><span class="panel-icon">${ico('book',23)}</span><div><h3>Sách được mượn nhiều nhất</h3><div class="panel-subtitle">Những đầu sách được độc giả yêu thích</div></div></div><span class="panel-chip">TOP 5</span></div>${popularBooksTable(top)}</section>
+    <section class="panel"><div class="panel-head"><div class="panel-title"><span class="panel-icon">${ico('chart',23)}</span><div><h3>Thống kê tình trạng sách</h3><div class="panel-subtitle">Tổng quan các bản sao trong thư viện</div></div></div></div>${availabilityChart(d)}</section>
+  </div>`;
+}
+async function renderAnalytics() {
+  const d = await api('/api/thongke/tong-quan');
+  const top = d.topSachDuocMuon ?? [];
+  const max = Math.max(1, ...top.map(b => Number(b.soLanMuon) || 0));
+  return `${metricCards(d)}<div class="analytics-grid"><section class="panel"><div class="panel-head"><div class="panel-title"><span class="panel-icon">${ico('chart')}</span><h3>Tỷ lệ bản sao có sẵn</h3></div></div>${availabilityChart(d)}</section>
+    <section class="panel"><div class="panel-head"><div class="panel-title"><span class="panel-icon">${ico('star')}</span><h3>Lượt mượn theo đầu sách</h3></div></div><p class="analytics-intro">Dữ liệu lấy trực tiếp từ báo cáo API, không sử dụng số liệu minh họa.</p>${top.length ? `<div class="bar-list">${top.map(x => `<div class="bar-row"><span class="bar-name" title="${esc(x.tenSach)}">${esc(x.tenSach)}</span><div class="bar-track"><div class="bar-fill" style="width:${Math.max(0,Math.min(100,100 * (Number(x.soLanMuon)||0)/max)).toFixed(1)}%"></div></div><span class="bar-count">${Number(x.soLanMuon)||0}</span></div>`).join('')}</div>` : empty('Chưa có lượt mượn sách nào.')}</section>
+    <section class="panel analytics-wide"><div class="panel-head"><div class="panel-title"><span class="panel-icon">${ico('book')}</span><h3>Danh sách sách được mượn nhiều nhất</h3></div></div>${popularBooksTable(top)}</section></div>`;
+}
+
+/* ---------- Books ---------- */
+async function renderBooks() {
+  const s = S.books;
+  const items = listOf(await api('/api/sach' + qs({
+    tuKhoa: s.tuKhoa, conSan: s.conSan, sortBy: s.sortBy, sortOrder: s.sortOrder,
+    pageNumber: s.pageNumber, pageSize: s.pageSize,
+  })));
+  items.forEach(b => cache.books[b.maSach] = b);
+  if (!items.length) return empty() + pager('books', 0);
+  const admin = isAdmin();
+  return `<div class="card"><table>
+    <thead><tr><th>Bìa</th><th>Tên sách</th><th>Năm</th><th>Tác giả</th><th>Bản sao</th><th>Tình trạng</th><th>Thao tác</th></tr></thead>
+    <tbody>${items.map(b => `<tr>
+      <td>${b.duongDanAnhBia ? `<img class="cover" src="${esc(b.duongDanAnhBia)}" alt="">` : '<div class="cover">Chưa có ảnh</div>'}</td>
+      <td><b>${esc(b.tenSach)}</b></td>
+      <td>${b.namXuatBan ?? ''}</td>
+      <td>${esc(b.tenTacGia ?? '—')}</td>
+      <td class="muted">${b.soBanSaoCoSan ?? 0}/${b.tongSoBanSao ?? 0} có sẵn</td>
+      <td>${(b.soBanSaoCoSan ?? 0) > 0 ? '<span class="badge b-ok">Còn sẵn</span>' : '<span class="badge b-warn">Hết sách</span>'}</td>
+      <td class="actions">
+        <button class="sm" data-act="copies" data-id="${b.maSach}">Bản sao</button>
+        <button class="sm primary" data-act="borrow" data-id="${b.maSach}" ${(b.soBanSaoCoSan ?? 0) > 0 ? '' : 'disabled'}>Mượn</button>
+        ${admin ? `<button class="sm" data-act="book-edit" data-id="${b.maSach}">Sửa</button>
+                   <button class="sm danger" data-act="book-del" data-id="${b.maSach}">Xóa</button>` : ''}
+      </td>
+    </tr>`).join('')}</tbody></table></div>${pager('books', items.length)}`;
+}
+
+async function openBookForm(b) {
+  const edit = !!b;
+  let authorOpts = '';
+  if (!edit) {
+    const authors = listOf(await api('/api/tacgia' + qs({ pageSize: 100 })));
+    if (!authors.length) { toast('Chưa có tác giả nào. Hãy thêm tác giả trước.', false); return; }
+    authorOpts = authors.map(a => `<option value="${a.maTacGia}">${esc(a.hoTen)}</option>`).join('');
+  }
+  const body = `
+    <div class="field">Tên sách *<input id="fTen" maxlength="200" value="${esc(b?.tenSach)}"></div>
+    <div class="field">Năm xuất bản<input id="fNam" type="number" min="1900" max="2100" value="${b?.namXuatBan ?? 2026}"></div>
+    <label class="field chk"><input id="fCon" type="checkbox" ${(b?.conSan ?? true) ? 'checked' : ''}> Còn sẵn để mượn</label>
+    ${edit
+      ? `<div class="muted" style="margin-bottom:12px">Tác giả: ${esc(b.tenTacGia ?? '—')} (không đổi được khi sửa)</div>
+         <div class="field">Ảnh bìa (jpg, jpeg, png, webp; tối đa 2 MB)<input id="fAnh" type="file" accept=".jpg,.jpeg,.png,.webp"></div>`
+      : `<div class="field">Tác giả *<select id="fTG">${authorOpts}</select></div>`}`;
+  openModal(edit ? 'Sửa sách' : 'Thêm sách', body, async () => {
+    const tenSach = $('#fTen').value.trim();
+    if (!tenSach) throw new Error('Vui lòng nhập tên sách.');
+    const dto = { tenSach, namXuatBan: Number($('#fNam').value), conSan: $('#fCon').checked };
+    if (edit) {
+      await api(`/api/sach/${b.maSach}`, { method: 'PUT', body: dto });
+      const file = $('#fAnh').files[0];
+      if (file) {
+        if (file.size > 2 * 1024 * 1024) throw new Error('Ảnh vượt quá 2 MB.');
+        const fd = new FormData();
+        fd.append('file', file);
+        await api(`/api/sach/${b.maSach}/anh-bia`, { method: 'POST', form: fd });
+      }
+      toast('Đã cập nhật sách.');
+    } else {
+      dto.maTacGia = Number($('#fTG').value);
+      await api('/api/sach', { method: 'POST', body: dto });
+      toast('Đã thêm sách.');
+    }
+    load('books');
+  });
+}
+
+function borrow(id) {
+  const b = cache.books[id];
+  openModal(`Mượn sách: ${b.tenSach}`, `
+    <div class="field">Tên người mượn *<input id="fNguoi" maxlength="100" value="${esc(session.name)}"></div>
+    <div class="field">Mã vạch bản sao (bỏ trống để chọn bản sao còn sẵn đầu tiên)<input id="fMaVach" maxlength="20" placeholder="VD: CS008"></div>
+    <div class="muted">Hạn trả là 7 ngày kể từ hôm nay.</div>`,
+    async () => {
+      const tenNguoiMuon = $('#fNguoi').value.trim();
+      if (!tenNguoiMuon) throw new Error('Vui lòng nhập tên người mượn.');
+      const maVach = $('#fMaVach').value.trim() || null;
+      await api('/api/phieumuon', { method: 'POST', body: { maSach: Number(id), tenNguoiMuon, maVach } });
+      toast('Mượn sách thành công.');
+      load('books');
+    }, 'Xác nhận mượn');
+}
+
+async function deleteBook(id) {
+  const b = cache.books[id];
+  if (!confirm(`Xóa sách "${b.tenSach}"?\nCác phiếu mượn của sách này cũng sẽ bị xóa.`)) return;
+  await api(`/api/sach/${id}`, { method: 'DELETE' });
+  toast('Đã xóa sách.');
+  load('books');
+}
+
+/* ---------- Authors ---------- */
+async function renderAuthors() {
+  const s = S.authors;
+  const items = listOf(await api('/api/tacgia' + qs({ tuKhoa: s.tuKhoa, pageNumber: s.pageNumber, pageSize: s.pageSize })));
+  items.forEach(a => cache.authors[a.maTacGia] = a);
+  if (!items.length) return empty() + pager('authors', 0);
+  const admin = isAdmin();
+  return `<div class="card"><table>
+    <thead><tr><th>Mã</th><th>Họ tên</th><th>Tiểu sử</th>${admin ? '<th>Thao tác</th>' : ''}</tr></thead>
+    <tbody>${items.map(a => `<tr>
+      <td>${a.maTacGia}</td>
+      <td><b>${esc(a.hoTen)}</b></td>
+      <td class="muted">${esc(a.tieuSu ?? '')}</td>
+      ${admin ? `<td class="actions">
+        <button class="sm" data-act="author-edit" data-id="${a.maTacGia}">Sửa</button>
+        <button class="sm danger" data-act="author-del" data-id="${a.maTacGia}">Xóa</button></td>` : ''}
+    </tr>`).join('')}</tbody></table></div>${pager('authors', items.length)}`;
+}
+
+function openAuthorForm(a) {
+  const edit = !!a;
+  openModal(edit ? 'Sửa tác giả' : 'Thêm tác giả', `
+    <div class="field">Họ tên *<input id="fHo" maxlength="100" value="${esc(a?.hoTen)}"></div>
+    <div class="field">Tiểu sử<textarea id="fTS" rows="3" maxlength="500">${esc(a?.tieuSu)}</textarea></div>`,
+    async () => {
+      const dto = { hoTen: $('#fHo').value.trim(), tieuSu: $('#fTS').value.trim() || null };
+      if (!dto.hoTen) throw new Error('Vui lòng nhập họ tên.');
+      if (edit) await api(`/api/tacgia/${a.maTacGia}`, { method: 'PUT', body: dto });
+      else await api('/api/tacgia', { method: 'POST', body: dto });
+      toast(edit ? 'Đã cập nhật tác giả.' : 'Đã thêm tác giả.');
+      load('authors');
+    });
+}
+
+async function deleteAuthor(id) {
+  const a = cache.authors[id];
+  if (!confirm(`Xóa tác giả "${a.hoTen}"?\nChỉ xóa được tác giả chưa có sách.`)) return;
+  await api(`/api/tacgia/${id}`, { method: 'DELETE' });
+  toast('Đã xóa tác giả.');
+  load('authors');
+}
+
+/* ---------- Loans ---------- */
+const STATUS = { daTra: ['Đã trả', 'b-ok'], quaHan: ['Quá hạn', 'b-bad'], dangMuon: ['Đang mượn', 'b-info'] };
+function loanStatus(p) {
+  if (p.ngayTra) return 'daTra';
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return p.hanTra && new Date(p.hanTra) < today ? 'quaHan' : 'dangMuon';
+}
+
+async function renderLoans() {
+  const s = S.loans;
+  const items = listOf(await api('/api/phieumuon' + qs({ trangThai: s.trangThai, pageNumber: s.pageNumber, pageSize: s.pageSize })));
+  items.forEach(p => cache.loans[p.maPhieu] = p);
+  if (!items.length) return empty() + pager('loans', 0);
+  const admin = isAdmin();
+  return `<div class="card"><table>
+    <thead><tr><th>Mã phiếu</th><th>Sách</th><th>Người mượn</th><th>Ngày mượn</th><th>Hạn trả</th><th>Ngày trả</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
+    <tbody>${items.map(p => {
+      const [label, cls] = STATUS[loanStatus(p)];
+      const open = !p.ngayTra;
+      return `<tr>
+        <td>${p.maPhieu}</td>
+        <td>${esc(p.tenSach ?? p.maSach)}</td>
+        <td>${esc(p.tenNguoiMuon)}</td>
+        <td>${fmtDate(p.ngayMuon)}</td>
+        <td>${fmtDate(p.hanTra)}</td>
+        <td>${fmtDate(p.ngayTra)}</td>
+        <td><span class="badge ${cls}">${label}</span></td>
+        <td class="actions">
+          ${open ? `<button class="sm primary" data-act="loan-return" data-id="${p.maPhieu}">Trả sách</button>
+                    <button class="sm" data-act="loan-extend" data-id="${p.maPhieu}">Sửa / Gia hạn</button>` : ''}
+          ${admin ? `<button class="sm danger" data-act="loan-del" data-id="${p.maPhieu}">Xóa</button>` : ''}
+        </td>
+      </tr>`;
+    }).join('')}</tbody></table></div>${pager('loans', items.length)}`;
+}
+
+async function returnLoan(id) {
+  if (!confirm('Xác nhận trả sách cho phiếu này?')) return;
+  await api(`/api/phieumuon/${id}/tra`, { method: 'POST' });
+  toast('Đã ghi nhận trả sách.');
+  load('loans');
+}
+
+function extendLoan(id) {
+  const p = cache.loans[id];
+  openModal('Sửa phiếu mượn', `
+    <div class="field">Tên người mượn *<input id="fNguoi" maxlength="100" value="${esc(p.tenNguoiMuon)}"></div>
+    <div class="field">Hạn trả mới<input id="fHan" type="date" value="${toInputDate(p.hanTra)}"></div>
+    <div class="muted">Hạn mới phải sau ngày mượn và không quá 30 ngày kể từ ngày mượn.</div>`,
+    async () => {
+      const tenNguoiMuon = $('#fNguoi').value.trim();
+      if (!tenNguoiMuon) throw new Error('Vui lòng nhập tên người mượn.');
+      const hanTra = $('#fHan').value ? fromInputDate($('#fHan').value) : null;
+      await api(`/api/phieumuon/${id}`, { method: 'PUT', body: { tenNguoiMuon, hanTra } });
+      toast('Đã cập nhật phiếu mượn.');
+      load('loans');
+    });
+}
+
+async function deleteLoan(id) {
+  if (!confirm('Xóa phiếu mượn này?\nNếu phiếu chưa trả, sách sẽ được đánh dấu còn sẵn.')) return;
+  await api(`/api/phieumuon/${id}`, { method: 'DELETE' });
+  toast('Đã xóa phiếu mượn.');
+  load('loans');
+}
+
+/* ---------- Accounts (Admin) ---------- */
+async function renderAccounts() {
+  const s = S.accounts;
+  const items = listOf(await api('/api/taikhoan' + qs({ tuKhoa: s.tuKhoa, vaiTro: s.vaiTro, pageNumber: s.pageNumber, pageSize: s.pageSize })));
+  items.forEach(t => cache.accounts[t.maTaiKhoan] = t);
+  if (!items.length) return empty() + pager('accounts', 0);
+  return `<div class="card"><table>
+    <thead><tr><th>Mã</th><th>Tên đăng nhập</th><th>Vai trò</th><th>Thao tác</th></tr></thead>
+    <tbody>${items.map(t => {
+      const self = t.tenDangNhap === session.name;
+      return `<tr>
+        <td>${t.maTaiKhoan}</td>
+        <td><b>${esc(t.tenDangNhap)}</b>${self ? ' <span class="muted">(bạn)</span>' : ''}</td>
+        <td><span class="badge ${t.vaiTro === 'Admin' ? 'b-info' : 'b-ok'}">${esc(t.vaiTro)}</span></td>
+        <td class="actions">
+          <button class="sm" data-act="acc-role" data-id="${t.maTaiKhoan}">Đổi vai trò</button>
+          <button class="sm" data-act="acc-reset" data-id="${t.maTaiKhoan}">Đặt lại mật khẩu</button>
+          <button class="sm danger" data-act="acc-del" data-id="${t.maTaiKhoan}" ${self ? 'disabled' : ''}>Xóa</button>
+        </td>
+      </tr>`;
+    }).join('')}</tbody></table></div>${pager('accounts', items.length)}`;
+}
+
+function createAccount() {
+  openModal('Tạo tài khoản', `
+    <div class="field">Tên đăng nhập *<input id="fUser" maxlength="30" placeholder="a-z, 0-9, _ hoặc . (3-30 ký tự)"></div>
+    <div class="field">Mật khẩu * (tối thiểu 8 ký tự)<input id="fPw" type="password" maxlength="100"></div>
+    <div class="field">Vai trò<select id="fRole"><option>User</option><option>Admin</option></select></div>`,
+    async () => {
+      const dto = { tenDangNhap: $('#fUser').value.trim(), matKhau: $('#fPw').value, vaiTro: $('#fRole').value };
+      if (!/^[a-z0-9_.]{3,30}$/.test(dto.tenDangNhap)) throw new Error('Tên đăng nhập chỉ gồm chữ thường, số, _ hoặc . (3-30 ký tự).');
+      if (dto.matKhau.length < 8) throw new Error('Mật khẩu phải có ít nhất 8 ký tự.');
+      await api('/api/taikhoan', { method: 'POST', body: dto });
+      toast('Đã tạo tài khoản.');
+      load('accounts');
+    });
+}
+
+function changeRole(id) {
+  const t = cache.accounts[id];
+  openModal(`Đổi vai trò: ${t.tenDangNhap}`, `
+    <div class="field">Vai trò mới<select id="fRole">
+      <option ${t.vaiTro === 'User' ? 'selected' : ''}>User</option>
+      <option ${t.vaiTro === 'Admin' ? 'selected' : ''}>Admin</option>
+    </select></div>
+    <div class="muted">Vai trò mới chỉ có hiệu lực với token cấp sau. Token cũ vẫn dùng được đến khi hết hạn.</div>`,
+    async () => {
+      await api(`/api/taikhoan/${id}`, { method: 'PUT', body: { vaiTro: $('#fRole').value } });
+      toast('Đã đổi vai trò.');
+      load('accounts');
+    });
+}
+
+function resetPassword(id) {
+  const t = cache.accounts[id];
+  openModal(`Đặt lại mật khẩu: ${t.tenDangNhap}`, `
+    <div class="field">Mật khẩu mới (tối thiểu 8 ký tự)<input id="fPw" type="password" maxlength="100"></div>`,
+    async () => {
+      const matKhauMoi = $('#fPw').value;
+      if (matKhauMoi.length < 8) throw new Error('Mật khẩu phải có ít nhất 8 ký tự.');
+      await api(`/api/taikhoan/${id}/mat-khau`, { method: 'PUT', body: { matKhauMoi } });
+      toast('Đã đặt lại mật khẩu.');
+    }, 'Đặt lại');
+}
+
+async function deleteAccount(id) {
+  const t = cache.accounts[id];
+  if (!confirm(`Xóa tài khoản "${t.tenDangNhap}"?\nKhông xóa được tài khoản đã có phiếu mượn hoặc Admin cuối cùng.`)) return;
+  await api(`/api/taikhoan/${id}`, { method: 'DELETE' });
+  toast('Đã xóa tài khoản.');
+  load('accounts');
+}
+
+/* ---------- Change own password ---------- */
+function changePassword() {
+  openModal('Đổi mật khẩu', `
+    <div class="field">Mật khẩu hiện tại<input id="fOld" type="password"></div>
+    <div class="field">Mật khẩu mới (tối thiểu 8 ký tự)<input id="fNew" type="password" maxlength="100"></div>`,
+    async () => {
+      const matKhauCu = $('#fOld').value, matKhauMoi = $('#fNew').value;
+      if (!matKhauCu) throw new Error('Nhập mật khẩu hiện tại.');
+      if (matKhauMoi.length < 8) throw new Error('Mật khẩu mới phải có ít nhất 8 ký tự.');
+      await api('/api/auth/doi-mat-khau', { method: 'PUT', body: { matKhauCu, matKhauMoi }, noLogout: true });
+      toast('Đã đổi mật khẩu.');
+    }, 'Đổi mật khẩu');
+}
+
+/* ---------- Bản sao sách (barcode) ---------- */
+const COPY_STATUS = { CoSan: ['Có sẵn', 'b-ok'], DangMuon: ['Đang mượn', 'b-info'], Hong: ['Hỏng', 'b-bad'] };
+let maSachDangXem = null;
+
+async function openCopies(maSach) {
+  maSachDangXem = maSach;
+  const b = cache.books[maSach];
+  openModal(`Bản sao: ${b?.tenSach ?? ''}`, '<div class="muted pad">Đang tải...</div>', async () => closeModal(), 'Đóng');
+  await renderCopiesModal();
+}
+
+async function renderCopiesModal() {
+  $('#modal .box').style.maxWidth = '720px';
+  const items = listOf(await api('/api/bansao' + qs({ maSach: maSachDangXem, pageSize: 100 })));
+  items.forEach(c => cache.copies[c.maBanSao] = c);
+  const admin = isAdmin();
+  const rows = items.map(c => {
+    const [label, cls] = COPY_STATUS[c.trangThai] ?? [c.trangThai, 'b-info'];
+    return `<tr>
+      <td><b>${esc(c.maVach)}</b></td>
+      <td>${esc(c.viTri ?? '—')}</td>
+      <td><span class="badge ${cls}">${label}</span></td>
+      <td class="actions">
+        <button class="sm primary" data-act="copy-borrow" data-id="${c.maBanSao}" ${c.trangThai === 'CoSan' ? '' : 'disabled'}>Mượn</button>
+        ${admin ? `<button class="sm" data-act="copy-edit" data-id="${c.maBanSao}">Sửa</button>
+                   <button class="sm danger" data-act="copy-del" data-id="${c.maBanSao}">Xóa</button>` : ''}
+      </td>
+    </tr>`;
+  }).join('');
+  $('#mBody').innerHTML = `${admin ? '<div style="margin-bottom:10px"><button class="sm primary" data-act="copy-new">+ Thêm bản sao</button></div>' : ''}
+    ${items.length ? `<div class="card"><table>
+      <thead><tr><th>Mã vạch</th><th>Vị trí</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
+      <tbody>${rows}</tbody></table></div>` : empty('Sách này chưa có bản sao nào.')}`;
+  $('#mOk').textContent = 'Đóng';
+  modalSubmit = async () => closeModal();
+}
+
+function openCopyForm(id) {
+  const c = id ? cache.copies[id] : null;
+  openModal(c ? `Sửa bản sao ${c.maVach}` : 'Thêm bản sao', `
+    <div class="field">Mã vạch ${c ? '(không sửa được)' : '(bỏ trống để máy chủ tự sinh)'}<input id="fMV" maxlength="20" value="${esc(c?.maVach)}" ${c ? 'disabled' : ''}></div>
+    <div class="field">Vị trí kệ<input id="fViTri" maxlength="50" value="${esc(c?.viTri)}" placeholder="VD: Ke A1"></div>
+    <div class="field">Trạng thái<select id="fTT">${Object.entries(COPY_STATUS).map(([k, [label]]) =>
+      `<option value="${k}" ${(c?.trangThai ?? 'CoSan') === k ? 'selected' : ''}>${label}</option>`).join('')}</select></div>`,
+    async () => {
+      const viTri = $('#fViTri').value.trim() || null;
+      const trangThai = $('#fTT').value;
+      if (c) {
+        await api(`/api/bansao/${c.maBanSao}`, { method: 'PUT', body: { maVach: c.maVach, viTri, trangThai } });
+      } else {
+        await api('/api/bansao', {
+          method: 'POST',
+          body: { maSach: Number(maSachDangXem), maVach: $('#fMV').value.trim() || null, viTri, trangThai },
+        });
+      }
+      toast('Đã lưu bản sao.');
+      await openCopies(maSachDangXem);     // quay về danh sách bản sao
+      if (current === 'books') load('books');
+      return true;                         // giữ hộp thoại, nội dung đã được thay
+    });
+}
+
+async function deleteCopy(id) {
+  const c = cache.copies[id];
+  if (!confirm(`Xóa bản sao ${c.maVach}?`)) return;
+  await api(`/api/bansao/${id}`, { method: 'DELETE' });
+  toast('Đã xóa bản sao.');
+  await openCopies(maSachDangXem);
+  if (current === 'books') load('books');
+}
+
+function borrowCopy(id) {
+  const c = cache.copies[id];
+  openModal(`Mượn bản sao ${c.maVach}`, `
+    <div class="field">Tên người mượn *<input id="fNguoi" maxlength="100" value="${esc(session.name)}"></div>
+    <div class="muted">Mã vạch ${esc(c.maVach)} · ${esc(c.tenSach ?? '')} · Hạn trả 7 ngày.</div>`,
+    async () => {
+      const tenNguoiMuon = $('#fNguoi').value.trim();
+      if (!tenNguoiMuon) throw new Error('Vui lòng nhập tên người mượn.');
+      await api('/api/phieumuon', { method: 'POST', body: { maSach: c.maSach, maVach: c.maVach, tenNguoiMuon } });
+      toast('Mượn bản sao thành công.');
+      await renderCopiesModal();           // cập nhật trạng thái bản sao ngay trong hộp thoại
+      if (current === 'books') load('books');
+      return true;
+    }, 'Xác nhận mượn');
+}
+
+/* ---------- Nhật ký gọi API (Admin) ---------- */
+async function renderApiLog() {
+  const s = S.apiLog;
+  const data = await api('/api/nhatky' + qs({
+    phuongThuc: s.phuongThuc, maTrangThai: s.maTrangThai,
+    pageNumber: s.pageNumber, pageSize: s.pageSize,
+  }));
+  const items = listOf(data);
+  if (!items.length) return empty() + pager('apiLog', 0);
+  return `<div class="card"><table>
+    <thead><tr><th>Thời điểm</th><th>Phương thức</th><th>Đường dẫn</th><th>Mã</th><th>Xử lý</th><th>Tài khoản</th></tr></thead>
+    <tbody>${items.map(x => `<tr>
+      <td>${new Date(x.thoiDiem).toLocaleString('vi-VN')}</td>
+      <td><span class="badge b-info">${esc(x.phuongThuc)}</span></td>
+      <td class="muted">${esc(x.duongDan)}</td>
+      <td><span class="badge ${x.maTrangThai < 400 ? 'b-ok' : 'b-bad'}">${x.maTrangThai}</span></td>
+      <td>${x.thoiGianXuLyMs} ms</td>
+      <td>${esc(x.tenDangNhap ?? '—')}</td>
+      
+    </tr>`).join('')}</tbody></table></div>${pager('apiLog', items.length)}`;
+}
+
+/* ---------- Event delegation ---------- */
+const actions = {
+  view: d => showView(d.id),
+  profile: () => toggleProfile(),
+  overdue: () => { S.loans.trangThai = 'quaHan'; S.loans.pageNumber = 1; showView('loans'); },
+  'demo-admin': () => { $('#lUser').value = 'admin'; $('#lPass').value = 'admin123'; },
+  'demo-reader': () => { $('#lUser').value = 'docgia'; $('#lPass').value = 'user1234'; },
+  logout: () => logout(),
+  'change-pw': () => changePassword(),
+  page: d => { const s = S[d.target]; s.pageNumber = Math.max(1, s.pageNumber + Number(d.dir)); load(d.target); },
+  borrow: d => borrow(d.id),
+  'book-new': () => openBookForm(null),
+  'book-edit': d => openBookForm(cache.books[d.id]),
+  'book-del': d => deleteBook(d.id),
+  'author-new': () => openAuthorForm(null),
+  'author-edit': d => openAuthorForm(cache.authors[d.id]),
+  'author-del': d => deleteAuthor(d.id),
+  'loan-return': d => returnLoan(d.id),
+  'loan-extend': d => extendLoan(d.id),
+  'loan-del': d => deleteLoan(d.id),
+  'acc-new': () => createAccount(),
+  'acc-role': d => changeRole(d.id),
+  'acc-reset': d => resetPassword(d.id),
+  'acc-del': d => deleteAccount(d.id),
+  copies: d => openCopies(d.id),
+  'copy-new': () => openCopyForm(null),
+  'copy-edit': d => openCopyForm(Number(d.id)),
+  'copy-del': d => deleteCopy(Number(d.id)),
+  'copy-borrow': d => borrowCopy(Number(d.id)),
+};
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-act]');
+  if (!el || el.disabled) return;
+  const fn = actions[el.dataset.act];
+  if (!fn) return;
+  Promise.resolve().then(() => fn(el.dataset)).catch(err => toast(err.message, false));
+});
+
+/* Tiện ích giao diện: tìm kiếm tổng quát, menu trên điện thoại, hộp thoại. */
+setupIcons();
+$('#togglePassword').onclick = () => {
+  const input = $('#lPass');
+  const show = input.type === 'password';
+  input.type = show ? 'text' : 'password';
+  $('#togglePassword').textContent = show ? 'Ẩn' : 'Hiện';
+  $('#togglePassword').setAttribute('aria-label', show ? 'Ẩn mật khẩu' : 'Hiển thị mật khẩu');
+};
+$('#menuToggle').onclick = () => {
+  const open = $('#sidebar').classList.toggle('open');
+  $('#sidebarBackdrop').classList.toggle('open', open);
+  $('#menuToggle').setAttribute('aria-expanded', String(open));
+};
+$('#sidebarBackdrop').onclick = closeSidebar;
+$('#mClose').onclick = closeModal;
+$('#modal').addEventListener('mousedown', e => { if (e.target === $('#modal')) closeModal(); });
+$('#globalSearch').addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  e.preventDefault();
+  S.books.tuKhoa = e.target.value.trim();
+  S.books.pageNumber = 1;
+  showView('books');
+});
+document.addEventListener('click', e => {
+  if (!e.target.closest('.top-actions')) closeProfile();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeSidebar(); closeProfile(); if (!$('#modal').classList.contains('hidden')) closeModal(); }
+});
+
+/* ---------- Start: restore session if still valid ---------- */
+(function init() {
+  const saved = sessionStorage.getItem('qltv_token');
+  if (!saved) return;
+  try { startSession(saved); }
+  catch { sessionStorage.removeItem('qltv_token'); }
+})();
+</script>
+</body>
+</html>
